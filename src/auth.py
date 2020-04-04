@@ -33,7 +33,9 @@ class TwitchAuth(requests.auth.AuthBase):
 
     def __call__(self, request):
         self.ensure_token()
-        request.headers = self.inject(request.headers)
+        request.url, request.headers = self.inject(
+            request.url, request.headers
+        )
 
         return request
 
@@ -42,30 +44,32 @@ class TwitchAuth(requests.auth.AuthBase):
             return
 
         response = requests.post(TOKEN_URL, params={
+            "client_id": CLIENT_ID,
+            "client_secret": CLIENT_SECRET,
             "grant_type": "refresh_token",
-            "client_id": constants.CLIENT_ID,
-            "client_secret": constants.CLIENT_SECRET,
             "refresh_token": self.token["refresh_token"]
         })
         if response.status_code == 200:
             self.token = save_token(response.json())
-            print("New token :)")
         else:
-            sys.exit("Token refresh failed {}".format(response.json()))
+            sys.exit("Failed token refresh {}".format(response.json()))
 
-    def inject(self, headers):
+    def inject(self, url, headers):
+        if "helix" in url:
+            headers["Authorization"] = "OAuth {}".format(self.token["access_token"])
+
         headers["Client-ID"] = CLIENT_ID
-        headers["Authorization"] = "OAuth {}".format(self.token["access_token"])
+        headers["Accept"] = "application/vnd.twitchtv.v5+json"
 
-        return headers
+        return url, headers
 
 
 def fetch_token(code):
     response = requests.post(TOKEN_URL, params={
         "code": code,
+        "client_id": CLIENT_ID,
+        "client_secret": CLIENT_SECRET,
         "grant_type": "authorization_code",
-        "client_id": constants.CLIENT_ID,
-        "client_secret": constants.CLIENT_SECRET,
         "redirect_uri": "http://localhost"
     })
     if response.status_code == 200:

@@ -2,11 +2,28 @@ import api
 
 
 class User:
-    def __init__(self, name):
-        self.name = name
-        self._init_helix()
+    def __init__(self):
+        pass
 
-    def _init_helix(self):
-        json = api.get_json("helix/users", params={"login": self.name})
+    def fetch(self, params):
+        json = api.json("helix/users", params=params)
+        data = json["data"][0]
 
-        self.id = json["data"][0]["id"]
+        self.id = data["id"]
+        self.name = data["display_name"]
+        self.desc = data["description"]
+        self.login = data["login"]
+
+    @staticmethod
+    def get_by_id(id):
+        user = User()
+        user.fetch({"id": id})
+
+        return user
+
+    @staticmethod
+    def get_by_login(login):
+        user = User()
+        user.fetch({"login": login})
+
+        return user

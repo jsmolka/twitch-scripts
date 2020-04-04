@@ -8,7 +8,7 @@ from user import *
 
 def _get_video_ids(user_id):
     try:
-        json = api.get_json("helix/videos", params={"user_id": user_id})
+        json = api.json("helix/videos", params={"user_id": user_id})
     except Exception as e:
         printl("Failed getting video ids")
         printl(str(e))

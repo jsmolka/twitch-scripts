@@ -63,7 +63,7 @@ def download_video(id):
 
             try:
                 response = api.get(segment.uri, stream=True)
-                filename = "{}/{}".format(video.id, segment.file_name)
+                filename = "{}/{}".format(video.id, segment.filename)
                 with open(filename, "wb") as data:
                     for chunk in response.iter_content(chunk_size=128):
                         data.write(chunk)

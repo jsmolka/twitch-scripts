@@ -12,4 +12,4 @@ Twitch requires an OAuth token for Helix API access.
 
 - open this [url](https://id.twitch.tv/oauth2/authorize?client_id=msnpl814eots3kcj4yq43yuuojw2zt&redirect_uri=http://localhost&response_type=code) and follow the instructions
 - retrieve the authorization code from the url (`code=<code>`)
-- execute `python auth.py -c <code>` to generate an access token
+- execute `python auth.py -c <code>` to fetch the access token
