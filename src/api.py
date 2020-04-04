@@ -1,15 +1,15 @@
-import ssl
+import auth
 import requests
 
 API_BASE = "https://api.twitch.tv"
-CLIENT_ID = "msnpl814eots3kcj4yq43yuuojw2zt"
+
+twitch_auth = auth.TwitchAuth()
 
 
 def _inject_headers(**kwargs):
     if "headers" not in kwargs:
         kwargs["headers"] = {}
 
-    kwargs["headers"]["Client-ID"] = CLIENT_ID
     kwargs["headers"]["Accept"] = "application/vnd.twitchtv.v5+json"
 
     return kwargs
@@ -25,7 +25,7 @@ def _handle_error(response):
 
 
 def get(url, **kwargs):
-    response = requests.get(url, **_inject_headers(**kwargs), timeout=60)
+    response = requests.get(url, **_inject_headers(**kwargs), timeout=60, auth=twitch_auth)
 
     if response.status_code != 200:
         _handle_error(response)
