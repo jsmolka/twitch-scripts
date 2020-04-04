@@ -1,4 +1,7 @@
-# Compiled files
+# Python
 *.pyc
 *.pyo
 *.pyd
+
+# OAuth
+token.json
