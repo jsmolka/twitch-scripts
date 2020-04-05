@@ -2,7 +2,7 @@ import api
 import argparse
 import os
 import sys
-import time
+from time import sleep
 from video import Video
 
 
@@ -38,14 +38,14 @@ def process(video, segments):
     file_mp = os.path.join(video.id, filename + ".mp4")
 
     if concat(pattern, file_ts) != 0:
-        print("Failed concatenating segments")
+        print("concatenating segments failed")
         return
 
     for segment in segments:
         os.remove(segment)
 
     if encode(file_ts, file_mp) != 0:
-        print("Failed encoding video")
+        print("Encoding video failed")
         return
 
     os.remove(file_ts)
@@ -56,7 +56,7 @@ def download(id):
         video = Video(id)
         print("Downloading video", id)
     except Exception as e:
-        print("Failed fetching video")
+        print("Fetching video failed")
         print(str(e))
         return
 
@@ -87,7 +87,7 @@ def download(id):
         if not video.live:
             break
 
-        time.sleep(300)
+        sleep(300)
 
         try:
             video.update()

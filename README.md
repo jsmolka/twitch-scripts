@@ -10,8 +10,8 @@ pip install -r requirements.txt
 Download [ffmpeg](https://www.ffmpeg.org/download.html) and add its location to `PATH`.
 
 ## OAuth
-Twitch requires an OAuth token for Helix API access.
+Twitch requires an OAuth token for Helix API access. Run `python auth.py` and follow the instructions to generate a token.
 
-- open this [url](https://id.twitch.tv/oauth2/authorize?client_id=msnpl814eots3kcj4yq43yuuojw2zt&redirect_uri=http://localhost&response_type=code) and follow the instructions
-- retrieve the authorization code from the url (`code=<code>`)
-- execute `python auth.py -c <code>` to fetch the access token
+## Usage
+- `python download.py -v <id>` to download videos (even sub-only ones)
+- `python watch.py -u <user>` to watch users for new videos

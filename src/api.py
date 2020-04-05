@@ -1,8 +1,8 @@
-import auth
 import requests
+from auth import TwitchAuth
 
 API_URL = "https://api.twitch.tv"
-TWITCH_AUTH = auth.TwitchAuth()
+TWITCH_AUTH = TwitchAuth()
 
 
 def error(response):
@@ -14,8 +14,17 @@ def error(response):
     raise RuntimeError("\n".join(lines))
 
 
+def inject(kwargs):
+    if "headers" not in kwargs:
+        kwargs["headers"] = {}
+
+    kwargs["headers"]["Accept"] = "application/vnd.twitchtv.v5+json"
+
+    return kwargs
+
+
 def get(url, **kwargs):
-    response = requests.get(url, **kwargs, auth=TWITCH_AUTH, timeout=60)
+    response = requests.get(url, **inject(kwargs), auth=TWITCH_AUTH, timeout=60)
 
     if response.status_code != 200:
         error(response)

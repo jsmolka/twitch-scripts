@@ -1,9 +1,11 @@
-import argparse
 import json
 import os.path as path
 import requests
-import sys
-import time
+from time import time
+from urllib.parse import parse_qs
+from urllib.parse import quote
+from urllib.parse import urlencode
+from urllib.parse import urlparse
 
 TOKEN_URL = "https://id.twitch.tv/oauth2/token"
 CLIENT_ID = "msnpl814eots3kcj4yq43yuuojw2zt"
@@ -11,7 +13,7 @@ CLIENT_SECRET = "4jo6khpc2ml7ggytl6zu6wao6jhh5w"
 
 
 def save_token(token):
-    token["expires_at"] = time.time() + token["expires_in"]
+    token["expires_at"] = time() + token["expires_in"]
 
     with open("token.json", "w") as token_file:
         json.dump(token, token_file, indent=2)
@@ -21,7 +23,7 @@ def save_token(token):
 
 def load_token():
     if not path.exists("token.json"):
-        sys.exit("Token missing")
+        exit("Token missing")
 
     with open("token.json", "r") as token_file:
         return json.load(token_file)
@@ -33,14 +35,12 @@ class TwitchAuth(requests.auth.AuthBase):
 
     def __call__(self, request):
         self.ensure_token()
-        request.url, request.headers = self.inject(
-            request.url, request.headers
-        )
+        request.headers = self.inject(request.headers)
 
         return request
 
     def ensure_token(self):
-        if self.token["expires_at"] - time.time() > 300:
+        if self.token["expires_at"] - time() > 300:
             return
 
         response = requests.post(TOKEN_URL, params={
@@ -52,16 +52,13 @@ class TwitchAuth(requests.auth.AuthBase):
         if response.status_code == 200:
             self.token = save_token(response.json())
         else:
-            sys.exit("Failed token refresh {}".format(response.json()))
+            exit("Token refresh failed {}".format(response.json()))
 
-    def inject(self, url, headers):
-        if "helix" in url:
-            headers["Authorization"] = "OAuth {}".format(self.token["access_token"])
-
+    def inject(self, headers):
         headers["Client-ID"] = CLIENT_ID
-        headers["Accept"] = "application/vnd.twitchtv.v5+json"
+        headers["Authorization"] = "OAuth {}".format(self.token["access_token"])
 
-        return url, headers
+        return headers
 
 
 def fetch_token(code):
@@ -75,11 +72,27 @@ def fetch_token(code):
     if response.status_code == 200:
         save_token(response.json())
     else:
-        print("Failed authorization", response.json())
+        print("Authorization failed", response.json())
+
+
+def auth():
+    query = urlencode({
+        "client_id": CLIENT_ID,
+        "response_type": "code",
+        "scope": "channel_editor",
+        "redirect_uri": "http://localhost"
+    }, quote_via=quote)
+
+    print("Paste this url into a browser and follow the instructions:")
+    print("https://id.twitch.tv/oauth2/authorize?{}".format(query))
+
+    parse = urlparse(input("Paste the result: "))
+    query = parse_qs(parse.query)
+    if "code" not in query:
+        exit("Invalid result")
+
+    fetch_token(query["code"])
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-c", dest="code", type=str, help="authorization code", required=True)
-
-    fetch_token(parser.parse_args().code)
+    auth()
