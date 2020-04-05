@@ -31,7 +31,7 @@ class Video:
         json = api.json("helix/videos", params={"id": self.id})
         data = json["data"][0]
 
-        self.user = User.get_by_id(data["user_id"]).login
+        self.user = User.get_by_id(data["user_id"])
         self.created_at = data.get("created_at")
         self.title = data.get("title")
         self.url = data.get("url")
@@ -39,11 +39,9 @@ class Video:
     def fetch_kraken(self):
         json = api.json("kraken/videos/{}".format(self.id))
 
-        self.status = json.get("status")
+        self.live = json.get("status") == "recording"
         self.preview_url = json.get("animated_preview_url")
         self.muted_segs = set()
-
-        print(self.preview_url)
 
         for seg in json.get("muted_segments", []):
             self.muted_segs.update(range(
@@ -63,7 +61,3 @@ class Video:
     def update(self):
         self.fetch_kraken()
         self.init_segments()
-
-    @property
-    def is_live(self):
-        return self.status == "recording"

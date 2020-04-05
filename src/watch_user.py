@@ -1,43 +1,41 @@
 import api
 import argparse
 import time
-from download_video import *
-from printl import *
-from user import *
+from download import download
+from user import User
 
 
-def _get_video_ids(user_id):
+def get_video_ids(user_id):
     try:
         json = api.json("helix/videos", params={"user_id": user_id})
     except Exception as e:
-        printl("Failed getting video ids")
-        printl(str(e))
+        print("Failed getting video ids")
+        print(str(e))
         return set()
 
-    video_ids = set()
+    ids = set()
     for video in json.get("data", []):
-        video_ids.add(video.get("id"))
+        ids.add(video.get("id"))
 
-    return video_ids
+    return ids
 
 
 def watch_user(name):
     user = None
     try:
         user = User(name)
-        printl("Watching user", name)
+        print("Watching user", name)
     except Exception as e:
-        printl("Failed user request", name)
-        printl(str(e))
+        print("Failed user request", name)
+        print(str(e))
         return
 
-    ids = _get_video_ids(user.id)
+    ids = get_video_ids(user.id)
 
     while True:
         time.sleep(1800)
-        printl("Updating video ids")
 
-        new_ids = _get_video_ids(user.id).difference(ids)
+        new_ids = get_video_ids(user.id).difference(ids)
 
         for video_id in new_ids:
             download_video(video_id)
@@ -52,6 +50,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    printl_init(args.l)
+    print_init(args.l)
 
     watch_user(args.u)

@@ -7,6 +7,8 @@ Install Python packages.
 pip install -r requirements.txt
 ```
 
+Download [ffmpeg](https://www.ffmpeg.org/download.html) and add its location to `PATH`.
+
 ## OAuth
 Twitch requires an OAuth token for Helix API access.
 

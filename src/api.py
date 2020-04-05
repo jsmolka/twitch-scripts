@@ -23,9 +23,9 @@ def get(url, **kwargs):
     return response
 
 
-def base(path, **kwargs):
-    return get("{}/{}".format(API_URL, path), **kwargs)
+def base(url, **kwargs):
+    return get("{}/{}".format(API_URL, url), **kwargs)
 
 
-def json(path, **kwargs):
-    return base(path, **kwargs).json()
+def json(url, **kwargs):
+    return base(url, **kwargs).json()
