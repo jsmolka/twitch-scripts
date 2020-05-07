@@ -2,6 +2,7 @@ import json
 import os.path as path
 import requests
 from time import time
+from datetime import datetime
 from urllib.parse import parse_qs
 from urllib.parse import quote
 from urllib.parse import urlencode
@@ -52,7 +53,7 @@ class TwitchAuth(requests.auth.AuthBase):
         if response.status_code == 200:
             self.token = save_token(response.json())
         else:
-            exit("Token refresh failed {}".format(response.json()))
+            print(datetime.now(), "Token refresh failed {}".format(response.json()))
 
     def inject(self, headers):
         headers["Client-ID"] = CLIENT_ID
@@ -72,7 +73,7 @@ def fetch_token(code):
     if response.status_code == 200:
         save_token(response.json())
     else:
-        print("Authorization failed", response.json())
+        print(datetime.now(), "Authorization failed", response.json())
 
 
 def auth():

@@ -2,6 +2,7 @@ import api
 import argparse
 import os
 import sys
+from datetime import datetime
 from time import sleep
 from video import Video
 
@@ -26,7 +27,7 @@ def concat(pattern, dst):
 
 
 def process(video, segments):
-    print("Processing {} segments".format(len(segments)))
+    print(datetime.now(), "Processing {} segments".format(len(segments)))
 
     filename = "{} {}".format(
         video.user.login,
@@ -38,14 +39,14 @@ def process(video, segments):
     file_mp = os.path.join(video.id, filename + ".mp4")
 
     if concat(pattern, file_ts) != 0:
-        print("concatenating segments failed")
+        print(datetime.now(), "Concatenating segments failed")
         return
 
     for segment in segments:
         os.remove(segment)
 
     if encode(file_ts, file_mp) != 0:
-        print("Encoding video failed")
+        print(datetime.now(), "Encoding video failed")
         return
 
     os.remove(file_ts)
@@ -54,10 +55,10 @@ def process(video, segments):
 def download(id):
     try:
         video = Video(id)
-        print("Downloading video", id)
+        print(datetime.now(), "Downloading video", id)
     except Exception as e:
-        print("Fetching video failed")
-        print(str(e))
+        print(datetime.now(), "Fetching video failed")
+        print(datetime.now(), str(e))
         return
 
     segments = []
@@ -81,8 +82,8 @@ def download(id):
                 finished.add(segment.id)
 
             except Exception as e:
-                print("Failed downloading segment", segment.id)
-                print(str(e))
+                print(datetime.now(), "Failed downloading segment", segment.id)
+                print(datetime.now(), str(e))
 
         if not video.live:
             break
@@ -92,8 +93,8 @@ def download(id):
         try:
             video.update()
         except Exception as e:
-            print("Failed updating video")
-            print(str(e))
+            print(datetime.now(), "Failed updating video")
+            print(datetime.now(), str(e))
             break
 
     process(video, segments)

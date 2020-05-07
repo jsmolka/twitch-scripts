@@ -9,8 +9,8 @@ def fetch_video_ids(user_id):
     try:
         json = api.json("helix/videos", params={"user_id": user_id})
     except Exception as e:
-        print("Fetching video IDs failed")
-        print(str(e))
+        print(datetime.now(), "Fetching video IDs failed")
+        print(datetime.now(), str(e))
         return set()
 
     ids = set()
@@ -23,10 +23,10 @@ def fetch_video_ids(user_id):
 def watch(name):
     try:
         user = User.get_by_login(name)
-        print("Watching user", name)
+        print(datetime.now(), "Watching user", name)
     except Exception as e:
-        print("Fetching user failed", name)
-        print(str(e))
+        print(datetime.now(), "Fetching user failed", name)
+        print(datetime.now(), str(e))
         return
 
     ids = fetch_video_ids(user.id)
