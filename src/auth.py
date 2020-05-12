@@ -36,8 +36,10 @@ class TwitchAuth(requests.auth.AuthBase):
 
     def __call__(self, request):
         self.ensure_token()
-        request.headers = self.inject(request.headers)
-
+        request.headers = self.inject(
+            request.headers,
+            "Bearer" if "https://api.twitch.tv/helix/" in request.url else "OAuth"
+        )
         return request
 
     def ensure_token(self):
@@ -55,9 +57,9 @@ class TwitchAuth(requests.auth.AuthBase):
         else:
             print(datetime.now(), "Token refresh failed {}".format(response.json()))
 
-    def inject(self, headers):
+    def inject(self, headers, prefix):
         headers["Client-ID"] = CLIENT_ID
-        headers["Authorization"] = "OAuth {}".format(self.token["access_token"])
+        headers["Authorization"] = "{} {}".format(prefix, self.token["access_token"])
 
         return headers
 
