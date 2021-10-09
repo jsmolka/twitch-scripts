@@ -1,6 +1,9 @@
 # twitch-scripts
 Abusing the Twitch API.
 
+## Update 09/10/21
+Downloading private VODs worked for some years but does not anymore.
+
 ## Setup
 Install Python packages.
 ```

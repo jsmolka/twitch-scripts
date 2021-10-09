@@ -38,14 +38,7 @@ def watch(name):
         new = fetch_video_ids(user.id).difference(ids)
 
         for video_id in new:
-            attempt = 0
-            while attempt < 10:
-                try:
-                    download(video_id)
-                    break
-                except:
-                    attempt += 1
-                    sleep(5 * 60);
+            download(video_id)
 
         ids.update(new)
 

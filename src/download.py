@@ -59,7 +59,7 @@ def download(id):
     except Exception as e:
         print(datetime.now(), "Fetching video failed")
         print(datetime.now(), str(e))
-        return
+        return False
 
     segments = []
     finished = set()
@@ -98,6 +98,8 @@ def download(id):
             break
 
     process(video, segments)
+
+    return True
 
 
 if __name__ == "__main__":

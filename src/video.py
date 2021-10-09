@@ -5,7 +5,7 @@ from user import User
 
 class VideoSegment:
     def __init__(self, segment, muted_segments):
-        self.id = int(segment.uri.replace(".ts", ""))
+        self.id = int(segment.uri.replace(".ts", "").replace("-unmuted", ""))
         self.uri_base = segment.base_uri
         self.uri_name = segment.uri
 
@@ -52,8 +52,8 @@ class Video:
 
     def fetch_segments(self):
         # Have: https://vod-storyboards.twitch.tv/the-thing-we-need/storyboards/521793143-strip-0.jpg
-        # Want: https://vod-metro.twitch.tv/the-thing-we-need/chunked/index-dvr.m3u8
-        m3u8_list = "https://vod-metro.twitch.tv/{}/chunked/index-dvr.m3u8".format(self.preview_url.split("/")[-3])
+        # Want: https://d1ymi26ma8va5x.cloudfront.net/the-thing-we-need/chunked/index-dvr.m3u8
+        m3u8_list = "https://d1ymi26ma8va5x.cloudfront.net/{}/chunked/index-dvr.m3u8".format(self.preview_url.split("/")[-3])
         m3u8_load = m3u8.load(m3u8_list)
 
         self.segments = [VideoSegment(segment, self.muted_segments) for segment in m3u8_load.segments]
